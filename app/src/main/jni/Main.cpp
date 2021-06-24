@@ -177,7 +177,9 @@ extern "C" {
 // To learn HTML, go to this page: https://www.w3schools.com/
 
 JNIEXPORT jobjectArray
-JNICALL
+JNICALL /** Zero protection, It can be found in any disasembler 
+It can be hidden
+**/
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
@@ -234,12 +236,14 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject c
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
 
     pthread_t ptid;
-    pthread_create(&ptid, NULL, antiLeech, NULL);
+    pthread_create(&ptid, NULL, antiLeech, NULL); /** A couple of clicks in ida, NOP hex and antiLeech disappears. **/
 
     return (ret);
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT void JNICALL /** Zero protection, It can be found in any disasembler 
+It can be hidden
+**/
 Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                                         jint featNum, jstring featName, jint value,
                                         jboolean boolean, jstring str) {
@@ -349,7 +353,8 @@ __attribute__((constructor))
 void lib_main() {
     // Create a new thread so it does not block the main thread, means the game would not freeze
     pthread_t ptid;
-    pthread_create(&ptid, NULL, hack_thread, NULL);
+    pthread_create(&ptid, NULL, hack_thread, NULL); /** Zero protection,
+	A couple of clicks in ida and hack_thread found **/
 }
 
 /*
