@@ -21,8 +21,8 @@ public class Main {
     private static native void CheckOverlayPermission(Context context);
 
     public static void StartWithoutPermission(Context context) {
-        CrashHandler.init(context, true);
-        if (context instanceof Activity) {
+        initCrashHandler(context);
+		if (context instanceof Activity) {
             //Check if context is an Activity.
             Menu menu = new Menu(context);
             menu.SetWindowManagerActivity();
@@ -32,10 +32,13 @@ public class Main {
             CheckOverlayPermission(context);
         }
     }
+	
+	public static void initCrashHandler(Context context) {
+		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(context));
+	}
 
     public static void Start(Context context) {
-        CrashHandler.init(context, false);
-
+        initCrashHandler(context);
         CheckOverlayPermission(context);
     }
 }
