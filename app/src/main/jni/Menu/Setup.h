@@ -105,6 +105,9 @@ void CheckOverlayPermission(JNIEnv *env, jclass thiz, jobject ctx){
 
     //StartMod Normal
     startService(env, ctx);
+   //Dialog Example.... Added here bcz it's make crash in some devices compiled in AIDE while adding to Init method
+    setDialog(ctx,env,OBFUSCATE("LGL Mod Menu"),OBFUSCATE("Love you LGL"));
+
 }
 
 void Init(JNIEnv *env, jobject thiz, jobject ctx, jobject title, jobject subtitle){
@@ -116,9 +119,6 @@ void Init(JNIEnv *env, jobject thiz, jobject ctx, jobject title, jobject subtitl
                                      "<p style=\"color:green;\">Modded by LGL</p> | "
                                      "https://github.com/LGLTeam | Lorem Ipsum is simply dummy text of the printing and typesetting</p>"
                                      "</marquee></b>"));
-
-    //Dialog Example
-    //setDialog(ctx,env,OBFUSCATE("Title"),OBFUSCATE("Message Example"));
 
     //Toast Example
     Toast(env,ctx,OBFUSCATE("Modded by YOU"),ToastLength::LENGTH_LONG);
