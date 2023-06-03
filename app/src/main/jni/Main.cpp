@@ -59,7 +59,7 @@ void FunctionExample(void *instance) {
             *(int *) ((uint64_t) instance + 0x48) = 999;
         }
     }
-    return old_FunctionExample(instance);
+    old_FunctionExample(instance);
 }
 
 // we will run our hacks in a new thread so our while loop doesn't block process main thread
