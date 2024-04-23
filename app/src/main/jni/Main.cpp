@@ -20,9 +20,10 @@
 
 #include "Includes/Macros.h"
 
-bool feature1, feature2, featureHookToggle, Health;
+bool feature1, feature2, featureHookToggle, Health, Kill;
 int sliderValue = 1, level = 0;
 void *instanceBtn;
+std::string text;
 
 // Hooking examples. Assuming you know how to write hook
 void (*AddMoneyExample)(void *instance, int amount);
@@ -141,60 +142,64 @@ void *hack_thread(void *) {
 // Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add True_. Example: CheckBox_True_The Check Box
 // To learn HTML, go to this page: https://www.w3schools.com/
 
+struct feature {
+    const char* name;
+    int type;
+    void* var;
+    /*** "1: boolean", "2: boolean = true", "3: int", "4: std::string" ***/
+};
+
+std::vector<feature> feature_list = {
+        {OBFUSCATE("Category_The Category")},
+        {OBFUSCATE("Toggle_The toggle"), 1, &feature1},
+        {OBFUSCATE("Toggle_True_The toggle 2"), 110}, //This one have feature number assigned, and switched on by default
+        {OBFUSCATE("Toggle_The Button 3"), 111}, //This one too
+        {OBFUSCATE("SeekBar_The slider_1_100"), 3, &sliderValue},
+        {OBFUSCATE("SeekBar_Kittymemory slider example_1_5")},
+        {OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3")},
+        {OBFUSCATE("ButtonOnOff_The On/Off button"), 1, &featureHookToggle},
+        {OBFUSCATE("CheckBox_The Check Box")},
+        {OBFUSCATE("InputValue_Input number"), 3, &level},
+        {OBFUSCATE("InputValue_1000_Input number 2")}, //Max value
+        {OBFUSCATE("InputText_Input text"), 4, &text},
+        {OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3")},
+
+        //Create new collapse
+        {OBFUSCATE("Collapse_Collapse 1")},
+        {OBFUSCATE("CollapseAdd_Toggle_The toggle"), 1, &feature2},
+        {OBFUSCATE("CollapseAdd_Toggle_The toggle"), 1, &Health},
+        {OBFUSCATE("CollapseAdd_Toggle_The toggle"), 123},
+        {OBFUSCATE("CollapseAdd_CheckBox_Check box"), 122},
+        {OBFUSCATE("CollapseAdd_Button_The button"), 2, &Kill},
+
+        //Create new collapse again
+        {OBFUSCATE("Collapse_Collapse 2_True")},
+        {OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100")},
+        {OBFUSCATE("CollapseAdd_InputValue_Input number")},
+
+        {OBFUSCATE("RichTextView_This is text view, not fully HTML."
+                  "<b>Bold</b> <i>italic</i> <u>underline</u>"
+                  "<br />New line <font color='red'>Support colors</font>"
+                  "<br/><big>bigger Text</big>")},
+        {OBFUSCATE("RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                  "This is WebView, with REAL HTML support!"
+                  "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
+                  "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
+                  "</body></html>")},
+};
+
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
-    const char *features[] = {
-            OBFUSCATE("Category_The Category"), //Not counted
-            OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE(
-                    "100_Toggle_True_The toggle 2"), //This one have feature number assigned, and switched on by default
-            OBFUSCATE("110_Toggle_The toggle 3"), //This one too
-            OBFUSCATE("SeekBar_The slider_1_100"),
-            OBFUSCATE("SeekBar_Kittymemory slider example_1_5"),
-            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
-            OBFUSCATE("Button_The button"),
-            OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"), //Not counted
-            OBFUSCATE("ButtonOnOff_The On/Off button"),
-            OBFUSCATE("CheckBox_The Check Box"),
-            OBFUSCATE("InputValue_Input number"),
-            OBFUSCATE("InputValue_1000_Input number 2"), //Max value
-            OBFUSCATE("InputText_Input text"),
-            OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
-
-            //Create new collapse
-            OBFUSCATE("Collapse_Collapse 1"),
-            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("123_CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("122_CollapseAdd_CheckBox_Check box"),
-            OBFUSCATE("CollapseAdd_Button_The button"),
-
-            //Create new collapse again
-            OBFUSCATE("Collapse_Collapse 2_True"),
-            OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100"),
-            OBFUSCATE("CollapseAdd_InputValue_Input number"),
-
-            OBFUSCATE("RichTextView_This is text view, not fully HTML."
-                      "<b>Bold</b> <i>italic</i> <u>underline</u>"
-                      "<br />New line <font color='red'>Support colors</font>"
-                      "<br/><big>bigger Text</big>"),
-            OBFUSCATE("RichWebView_<html><head><style>body{color: white;}</style></head><body>"
-                      "This is WebView, with REAL HTML support!"
-                      "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
-                      "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
-                      "</body></html>")
-    };
+    int length = (int) feature_list.size();
 
     //Now you dont have to manually update the number everytime;
-    int Total_Feature = (sizeof features / sizeof features[0]);
     ret = (jobjectArray)
-            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
+            env->NewObjectArray(length, env->FindClass(OBFUSCATE("java/lang/String")),
                                 env->NewStringUTF(""));
-
-    for (int i = 0; i < Total_Feature; i++)
-        env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
-
+    for (int i = 0; i < length; i++) {
+        env->SetObjectArrayElement(ret, i, env->NewStringUTF(feature_list[i].name));
+    }
     return (ret);
 }
 
@@ -202,85 +207,28 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
                                         jint featNum, jstring featName, jint value,
                                         jboolean boolean, jstring str) {
 
+    //Toast(env, obj, std::to_string(length).c_str(), ToastLength::LENGTH_SHORT);
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d | Text: = %s"), featNum,
          env->GetStringUTFChars(featName, 0), value,
          boolean, str != NULL ? env->GetStringUTFChars(str, 0) : "");
 
     //BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
-
-    switch (featNum) {
-        case 0:
-            // A much simpler way to patch hex via KittyMemory without need to specify the struct and len. Spaces or without spaces are fine
-            // ARMv7 assembly example
-            // MOV R0, #0x0 = 00 00 A0 E3
-            // BX LR = 1E FF 2F E1
-            PATCH_LIB_SWITCH("libil2cpp.so", "0x100000", "00 00 A0 E3 1E FF 2F E1", boolean);
-            break;
-        case 100:
-            //Reminder that the strings are auto obfuscated
-            //Switchable patch
-            PATCH_SWITCH("0x400000", "00 00 A0 E3 1E FF 2F E1", boolean);
-            PATCH_LIB_SWITCH("libil2cpp.so", "0x200000", "00 00 A0 E3 1E FF 2F E1", boolean);
-            PATCH_SYM_SWITCH("_SymbolExample", "00 00 A0 E3 1E FF 2F E1", boolean);
-            PATCH_LIB_SYM_SWITCH("libNativeGame.so", "_SymbolExample", "00 00 A0 E3 1E FF 2F E1", boolean);
-
-            //Restore patched offset to original
-            RESTORE("0x400000");
-            RESTORE_LIB("libil2cpp.so", "0x400000");
-            RESTORE_SYM("_SymbolExample");
-            RESTORE_LIB_SYM("libil2cpp.so", "_SymbolExample");
-            break;
-        case 110:
-            break;
+    switch (feature_list[featNum].type) {
+        /*** case 1 ~ 4 ***/
         case 1:
-            if (value >= 1) {
-                sliderValue = value;
-            }
+            *(bool *) feature_list[featNum].var = boolean; //Toggle
             break;
         case 2:
-            switch (value) {
-                //For noobies
-                case 0:
-                    RESTORE("0x0");
-                    break;
-                case 1:
-                    PATCH("0x0", "01 00 A0 E3 1E FF 2F E1");
-                    break;
-                case 2:
-                    PATCH("0x0", "02 00 A0 E3 1E FF 2F E1");
-                    break;
-            }
+            *(bool *) feature_list[featNum].var = true; //Button
             break;
         case 3:
-            switch (value) {
-                case 0:
-                    LOGD(OBFUSCATE("Selected item 1"));
-                    break;
-                case 1:
-                    LOGD(OBFUSCATE("Selected item 2"));
-                    break;
-                case 2:
-                    LOGD(OBFUSCATE("Selected item 3"));
-                    break;
-            }
+            *(int *) feature_list[featNum].var = value; //Slider
             break;
         case 4:
-            // Since we have instanceBtn as a field, we can call it out of Update hook function
-            if (instanceBtn != NULL)
-                AddMoneyExample(instanceBtn, 999999);
-            // Toast(env, obj, OBFUSCATE("Button pressed"), ToastLength::LENGTH_SHORT);
+            *(std::string *) feature_list[featNum].var = env->GetStringUTFChars(str, nullptr); //InputText
             break;
-        case 5:
-            break;
-        case 6:
-            featureHookToggle = boolean;
-            break;
-        case 7:
-            level = value;
-            break;
-        case 8:
-            break;
-        case 9:
+        /*** other cases ***/
+        case 111:
             break;
     }
 }
