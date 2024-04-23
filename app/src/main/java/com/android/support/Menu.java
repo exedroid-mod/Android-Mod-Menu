@@ -436,7 +436,7 @@ public class Menu {
 
     private void featureList(String[] listFT, LinearLayout linearLayout) {
         //Currently looks messy right now. Let me know if you have improvements
-        int featNum, subFeat = 0;
+        int featNum;
         LinearLayout llBak = linearLayout;
 
         for (int i = 0; i < listFT.length; i++) {
@@ -454,17 +454,9 @@ public class Menu {
                 linearLayout = mCollapse;
                 feature = feature.replaceFirst("CollapseAdd_", "");
             }
-            String[] str = feature.split("_");
 
-            //Assign feature number
-            if (TextUtils.isDigitsOnly(str[0]) || str[0].matches("-[0-9]*")) {
-                featNum = Integer.parseInt(str[0]);
-                feature = feature.replaceFirst(str[0] + "_", "");
-                subFeat++;
-            } else {
-                //Subtract feature number. We don't want to count ButtonLink, Category, RichTextView and RichWebView
-                featNum = i - subFeat;
-            }
+            featNum = i;
+
             String[] strSplit = feature.split("_");
             switch (strSplit[0]) {
                 case "Toggle":
@@ -500,22 +492,17 @@ public class Menu {
                     break;
                 case "Collapse":
                     Collapse(linearLayout, strSplit[1], switchedOn);
-                    subFeat++;
                     break;
                 case "ButtonLink":
-                    subFeat++;
                     ButtonLink(linearLayout, strSplit[1], strSplit[2]);
                     break;
                 case "Category":
-                    subFeat++;
                     Category(linearLayout, strSplit[1]);
                     break;
                 case "RichTextView":
-                    subFeat++;
                     TextView(linearLayout, strSplit[1]);
                     break;
                 case "RichWebView":
-                    subFeat++;
                     WebTextView(linearLayout, strSplit[1]);
                     break;
             }
