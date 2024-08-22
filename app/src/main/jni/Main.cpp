@@ -72,7 +72,7 @@ void *hack_thread(void *) {
 
     //Check if target lib is loaded
     do {
-        sleep(25);
+        sleep(25); // Increased library load time to prevent crash issues
     } while (!isLibraryLoaded(targetLibName));
 
     //Anti-lib rename
@@ -89,12 +89,12 @@ bool isDone = false;
 if (!isDone) {
     // Here we load our classes
     
-	auto WalletModel_ = new LoadClass(OBFUSCATE("SYBO.Subway.Meta"), OBFUSCATE("WalletModel"));
-     // SYBO.Subway.Meta  is namespace of class we want to search for auto update  if your class don't have any namespace keep it empty.
+	auto WalletModel_ = new LoadClass(OBFUSCATE("Example.Namespace"), OBFUSCATE("WalletModel"));
+     // Example.Namespace is namespace of class we want to search for auto update  if your class don't have any namespace keep it empty.
      // WalletModel is name of Our class
      
-     auto CharacterMotor_ = new LoadClass(OBFUSCATE("SYBO.RunnerCore.Character"), OBFUSCATE("CharacterMotor"));
-     // SYBO.RunnerCore.Character is namespace & CharacterMotor is class name 
+     auto CharacterMotor_ = new LoadClass(OBFUSCATE(""), OBFUSCATE("CharacterMotor"));
+     //if  our class not have any namespace keep it empty
      
      
     // Here We load our method name 
