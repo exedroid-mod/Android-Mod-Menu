@@ -21,6 +21,7 @@ void hook(void *offset, void* ptr, void **orig)
 }
 
 #define HOOK(offset, ptr, orig) hook((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE(offset))), (void *)ptr, (void **)&orig)
+#define HOOK_AU(offset, ptr, orig) hook((void *)offset, (void *)ptr, (void **)&orig)
 #define HOOK_LIB(lib, offset, ptr, orig) hook((void *)getAbsoluteAddress(OBFUSCATE(lib), string2Offset(OBFUSCATE(offset))), (void *)ptr, (void **)&orig)
 
 #define HOOK_NO_ORIG(offset, ptr) hook((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE(offset))), (void *)ptr, NULL)
@@ -103,6 +104,7 @@ void patchOffsetSym(uintptr_t absolute_address, std::string hexBytes, bool isOn)
 #define PATCH_LIB_SYM(lib, sym, hex) patchOffset(dlsym(dlopen(lib, 4), OBFUSCATE(sym)), OBFUSCATE(hex), true)
 
 #define PATCH_SWITCH(offset, hex, boolean) patchOffset(targetLibName, string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), boolean)
+#define PATCH_SWITCH_AU(offset, hex, boolean) patchOffsetSym(offset, OBFUSCATE(hex), boolean)
 #define PATCH_LIB_SWITCH(lib, offset, hex, boolean) patchOffset(OBFUSCATE(lib), string2Offset(OBFUSCATE(offset)), OBFUSCATE(hex), boolean)
 
 #define PATCH_SYM_SWITCH(sym, hex, boolean) patchOffsetSym((uintptr_t)dlsym(dlopen(targetLibName, 4), OBFUSCATE(sym)), OBFUSCATE(hex), boolean)

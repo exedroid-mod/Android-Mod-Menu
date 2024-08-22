@@ -14,9 +14,13 @@
 #include "Includes/Utils.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Menu/Setup.h"
+#include "AutoHook/AutoHook.h" 
 
 //Target lib here
-#define targetLibName OBFUSCATE("libFileA.so")
+#define targetLibName OBFUSCATE("libil2cpp.so")
+
+DWORD Get_Currency_, No_Gravity_, Infinite_Jump_; // Variable to store offset searched by autupdate 
+
 
 #include "Includes/Macros.h"
 
@@ -68,7 +72,7 @@ void *hack_thread(void *) {
 
     //Check if target lib is loaded
     do {
-        sleep(1);
+        sleep(25); // Increased library load time to prevent crash issues
     } while (!isLibraryLoaded(targetLibName));
 
     //Anti-lib rename
@@ -76,6 +80,44 @@ void *hack_thread(void *) {
     do {
         sleep(1);
     } while (!isLibraryLoaded("libYOURNAME.so"));*/
+
+
+//------------------------------------------------ AUTO UPDATE FIELD
+	
+bool isDone = false;
+	
+if (!isDone) {
+    // Here we load our classes
+    
+	auto WalletModel_ = new LoadClass(OBFUSCATE("Example.Namespace"), OBFUSCATE("WalletModel"));
+     // Example.Namespace is namespace of class we want to search for auto update  if your class don't have any namespace keep it empty.
+     // WalletModel is name of Our class
+     
+     auto CharacterMotor_ = new LoadClass(OBFUSCATE(""), OBFUSCATE("CharacterMotor"));
+     //if  our class not have any namespace keep it empty
+     
+     
+    // Here We load our method name 
+    
+     // This will search GetCurrency method offset in WalletModel class that we defined previously 
+     Get_Currency_ = WalletModel_->GetMethodOffsetByName(OBFUSCATE("GetCurrency"), 1); 
+    //public int Currency = GetCurrency(int value), This method have one variable as argument so we write 1 in second argument
+    
+    // This will search get_CanJump method offset in CharacterMotor class that we defined previously
+    Infinite_Jump_ = CharacterMotor_->GetMethodOffsetByName(OBFUSCATE("get_CanJump"), 0); 
+   // public bool = get_CanJump(), This method have no variable as argument so we write 0 in second argument
+	No_Gravity_ = CharacterMotor_->GetMethodOffsetByName(OBFUSCATE("ApplyGravity"), 0); 
+    
+    
+    
+    isDone = true; // To prevent auto update search again and again 
+}
+     
+     
+     //Autoupdate hook example
+    //HOOK_AU(Get_CanHurt_, update, old_update);
+
+
 
     LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
 
@@ -147,6 +189,7 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     const char *features[] = {
             OBFUSCATE("Category_The Category"), //Not counted
             OBFUSCATE("Toggle_The toggle"),
+            OBFUSCATE ("69_Toggle_Get Currency"), // case 69
             OBFUSCATE(
                     "100_Toggle_True_The toggle 2"), //This one have feature number assigned, and switched on by default
             OBFUSCATE("110_Toggle_The toggle 3"), //This one too
@@ -216,6 +259,11 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
             // BX LR = 1E FF 2F E1
             PATCH_LIB_SWITCH("libil2cpp.so", "0x100000", "00 00 A0 E3 1E FF 2F E1", boolean);
             break;
+         
+        case 69:
+           PATCH_SWITCH_AU(Get_Currency_, "01 04 A0 E3 1E FF 2F E1", boolean);
+        break;
+        
         case 100:
             //Reminder that the strings are auto obfuscated
             //Switchable patch
